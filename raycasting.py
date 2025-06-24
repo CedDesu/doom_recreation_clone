@@ -73,6 +73,11 @@ class RayCasting:
             # projection
             proj_height = SCREEN_DIST / (depth + 0.0001)
 
+            # draw walls
+            pg.draw.rect(self.game.screen, 'white',
+                         (ray * SCALE, HALF_HEIGHT * proj_height // 2, SCALE, proj_height))
+
+
             # ray casting result
             self.ray_casting_result.append((depth, proj_height, texture, offset))
 
