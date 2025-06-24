@@ -10,6 +10,12 @@ class RayCasting:
         self.objects_to_render = []
         self.textures = self.game.object_renderer.wall_textures
 
+    def get_objects_to_render(self):
+        self.objects_to_render = []
+        for ray, values in enumerate(self.ray_casting_result):
+            depth, proj_height, texture, offset = values
+
+
     def ray_cast(self):
         self.ray_casting_result = []
         texture_vert, texture_hor = 1, 1
@@ -74,9 +80,9 @@ class RayCasting:
             proj_height = SCREEN_DIST / (depth + 0.0001)
 
             # draw walls
-            pg.draw.rect(self.game.screen, 'white',
+            color = [255 / (1 + depth ** 5 * 0.00002)] * 3
+            pg.draw.rect(self.game.screen, color,
                          (ray * SCALE, HALF_HEIGHT * proj_height // 2, SCALE, proj_height))
-
 
             # ray casting result
             self.ray_casting_result.append((depth, proj_height, texture, offset))
