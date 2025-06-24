@@ -43,4 +43,5 @@ class NPC(AnimatedSprite):
         if self.game.player.shot:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
                 self.game.player.shot = False
+                self.game.sound.npc_pain.play()
                 self.pain = True
