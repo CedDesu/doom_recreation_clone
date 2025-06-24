@@ -1,6 +1,8 @@
 from sprite_object import *
 from random import randint, random, choice
-
+from cyber_demon_npc import *
+from caco_demon_npc import *
+from soldier_npc import *
 
 class NPC(AnimatedSprite):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(10.5, 5.5),
