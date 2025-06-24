@@ -1,7 +1,6 @@
 """
 Clone of Doom, simple code that emulates the 1993 first-person shooter game Doom by id Software
 """
-
 import pygame as pg
 import sys
 from settings import *
@@ -15,6 +14,7 @@ class Game:
         pg.init()
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
+        self.delta_time = 1
         self.new_game()
 
     def new_game(self):
@@ -32,6 +32,7 @@ class Game:
 
     def draw(self):
         self.screen.fill('black')
+        self.object_renderer.draw()
         #self.map.draw()
         #self.player.draw()
 
