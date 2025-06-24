@@ -8,6 +8,7 @@ class Player:
         self.x, self.y = PLAYER_POS
         self.angle = PLAYER_ANGLE
         self.shot = False
+        self.health = PLAYER_MAX_HEALTH
         # diagonal movement correction
         self.diag_move_corr = 1 / math.sqrt(2)
 
