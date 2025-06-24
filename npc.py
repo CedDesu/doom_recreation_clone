@@ -1,8 +1,6 @@
 from sprite_object import *
-from random import randint, random, choice
-from cyber_demon_npc import *
-from caco_demon_npc import *
-from soldier_npc import *
+from random import randint, random
+
 
 class NPC(AnimatedSprite):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(10.5, 5.5),
@@ -30,7 +28,7 @@ class NPC(AnimatedSprite):
         self.check_animation_time()
         self.get_sprite()
         self.run_logic()
-        #self.draw_ray_cast()
+        # self.draw_ray_cast()
 
     def check_wall(self, x, y):
         return (x, y) not in self.game.map.world_map
@@ -52,11 +50,6 @@ class NPC(AnimatedSprite):
             dy = math.sin(angle) * self.speed
             self.check_wall_collision(dx, dy)
 
-    def animate_pain(self):
-        self.animate(self.pain_images)
-        if self.animation_trigger:
-            self.pain = False
-
     def attack(self):
         if self.animation_trigger:
             self.game.sound.npc_shot.play()
@@ -70,6 +63,25 @@ class NPC(AnimatedSprite):
                 self.image = self.death_images[0]
                 self.frame_counter += 1
 
+    def animate_pain(self):
+        self.animate(self.pain_images)
+        if self.animation_trigger:
+            self.pain = False
+
+    def check_hit_in_npc(self):
+        if self.ray_cast_value and self.game.player.shot:
+            if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
+                self.game.sound.npc_pain.play()
+                self.game.player.shot = False
+                self.pain = True
+                self.health -= self.game.weapon.damage
+                self.check_health()
+
+    def check_health(self):
+        if self.health < 1:
+            self.alive = False
+            self.game.sound.npc_death.play()
+
     def run_logic(self):
         if self.alive:
             self.ray_cast_value = self.ray_cast_player_npc()
@@ -78,7 +90,7 @@ class NPC(AnimatedSprite):
             if self.pain:
                 self.animate_pain()
 
-            elif self .ray_cast_value:
+            elif self.ray_cast_value:
                 self.player_search_trigger = True
 
                 if self.dist < self.attack_dist:
@@ -96,20 +108,6 @@ class NPC(AnimatedSprite):
                 self.animate(self.idle_images)
         else:
             self.animate_death()
-
-    def check_hit_in_npc(self):
-        if self.ray_cast_value and self.game.player.shot:
-            if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
-                self.game.player.shot = False
-                self.game.sound.npc_pain.play()
-                self.pain = True
-                self.health -= self.game.weapon.damage
-                self.check_health()
-
-    def check_health(self):
-        if self.health < 1:
-           self.alive = False
-           self.game.sound.npc_death.play()
 
     @property
     def map_pos(self):
@@ -184,6 +182,49 @@ class NPC(AnimatedSprite):
         if self.ray_cast_player_npc():
             pg.draw.line(self.game.screen, 'orange', (100 * self.game.player.x, 100 * self.game.player.y),
                          (100 * self.x, 100 * self.y), 2)
+
+
+class SoldierNPC(NPC):
+    def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(10.5, 5.5),
+                 scale=0.6, shift=0.38, animation_time=180):
+        super().__init__(game, path, pos, scale, shift, animation_time)
+
+class CacoDemonNPC(NPC):
+    def __init__(self, game, path='resources/sprites/npc/caco_demon/0.png', pos=(10.5, 6.5),
+                 scale=0.7, shift=0.27, animation_time=250):
+        super().__init__(game, path, pos, scale, shift, animation_time)
+        self.attack_dist = 1.0
+        self.health = 150
+        self.attack_damage = 25
+        self.speed = 0.05
+        self.accuracy = 0.35
+
+class CyberDemonNPC(NPC):
+    def __init__(self, game, path='resources/sprites/npc/cyber_demon/0.png', pos=(11.5, 6.0),
+                 scale=1.0, shift=0.04, animation_time=210):
+        super().__init__(game, path, pos, scale, shift, animation_time)
+        self.attack_dist = 6
+        self.health = 350
+        self.attack_damage = 15
+        self.speed = 0.055
+        self.accuracy = 0.25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

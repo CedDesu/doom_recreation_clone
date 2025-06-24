@@ -13,9 +13,6 @@ from object_handler import *
 from weapon import *
 from sound import *
 from pathfinding import *
-from cyber_demon_npc import *
-from caco_demon_npc import *
-from soldier_npc import *
 
 
 class Game:
