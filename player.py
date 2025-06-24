@@ -7,6 +7,8 @@ class Player:
         self.game = game
         self.x, self.y = PLAYER_POS
         self.angle = PLAYER_ANGLE
+        # diagonal movement correction
+        self.diag_move_corr = 1 / math.sqrt(2)
 
     def movement(self):
         sin_a = math.sin(self.angle)
