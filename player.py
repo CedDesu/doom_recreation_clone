@@ -52,13 +52,13 @@ class Player:
         return (x, y) not in self.game.map.world_map
 
     def check_wall_collision(self, dx, dy):
+        scale =PLAYER_SIZE_SCALE/ self.game.delta_time
         if self.check_wall(int(self.x + dx * scale), int(self.y)):
             self.x += dx
         if self.check_wall(int(self.x), int(self.y + dy * scale)):
             self.y += dy
 
     def draw(self):
-        def draw(self):
             pg.draw.line(self.game.screen, 'yellow', (self.x * 100, self.y * 100),
                          (self.x * 100 + WIDTH * math.cos(self.angle),
                           self.y * 100 + WIDTH * math.sin(self.angle)), 2)
