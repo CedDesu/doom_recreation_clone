@@ -1,4 +1,6 @@
 from collections import deque
+from functools import lru_cache
+
 
 class PathFinding:
     def __init__(self, game):
@@ -6,7 +8,9 @@ class PathFinding:
         self.map = game.map.mini_map
         self.ways = [-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [1, -1], [1, 1], [-1, 1]
         self.graph = {}
+        self.get_graph()
 
+    @lru_cache
     def get_path(self, start, goal):
         self.visited = self.bfs(start, goal, self.graph)
         path = [goal]

@@ -13,6 +13,9 @@ from object_handler import *
 from weapon import *
 from sound import *
 from pathfinding import *
+from cyber_demon_npc import *
+from caco_demon_npc import *
+from soldier_npc import *
 
 
 class Game:
@@ -20,6 +23,7 @@ class Game:
         pg.init()
         pg.mouse.set_visible(False)
         self.screen = pg.display.set_mode(RES)
+        pg.event.set_grab(True)
         self.clock = pg.time.Clock()
         self.delta_time = 1
         self.global_trigger = False
@@ -36,6 +40,7 @@ class Game:
         self.weapon = Weapon(self)
         self.sound = Sound(self)
         self.pathfinding = PathFinding(self)
+        pg.mixer.music.play(-1)
 
     def update(self):
         self.player.update()
@@ -47,10 +52,11 @@ class Game:
         pg.display.set_caption(f'{self.clock.get_fps() :.1f}')
 
     def draw(self):
+        # self.screen.fill('black')
         self.object_renderer.draw()
         self.weapon.draw()
-        #self.map.draw()
-        #self.player.draw()
+        # self.map.draw()
+        # self.player.draw()
 
     def check_events(self):
         self.global_trigger = False
