@@ -8,6 +8,7 @@ from map import *
 from player import *
 from raycasting import *
 from object_renderer import *
+from sprite_object import *
 
 class Game:
     def __init__(self):
@@ -23,6 +24,7 @@ class Game:
         self.player = Player(self)
         self.object_renderer = ObjectRenderer(self)
         self.raycasting = RayCasting(self)
+        self.static_sprite = SpriteObject
 
     def update(self):
         self.player.update()
