@@ -6,14 +6,13 @@ import math
 class Player:
     def __init__(self, game):
         self.game = game
-        self.x, self.y = PLAYER_POS
+        self.pos_x, self.pos_y = PLAYER_POS
         self.angle = PLAYER_ANGLE
         self.shot = False
         self.health = PLAYER_MAX_HEALTH
         self.rel = 0
         self.health_recovery_delay = 700
         self.time_prev = pg.time.get_ticks()
-        # diagonal movement correction
         self.diag_move_corr = 1 / math.sqrt(2)
 
     def recover_health(self):
@@ -47,64 +46,71 @@ class Player:
                 self.game.weapon.reloading = True
 
     def movement(self):
-        sin_a = math.sin(self.angle)
-        cos_a = math.cos(self.angle)
-        dx, dy = 0, 0
+        sin_angle = math.sin(self.angle)
+        cos_angle = math.cos(self.angle)
+        delta_x, delta_y = 0, 0
         speed = PLAYER_SPEED * self.game.delta_time
-        speed_sin = speed * sin_a
-        speed_cos = speed * cos_a
+        speed_sin = speed * sin_angle
+        speed_cos = speed * cos_angle
 
         keys = pg.key.get_pressed()
-        num_key_pressed = -1
+        num_keys_pressed = -1
         if keys[pg.K_w]:
-            num_key_pressed += 1
-            dx += speed_cos
-            dy += speed_sin
+            num_keys_pressed += 1
+            delta_x += speed_cos
+            delta_y += speed_sin
         if keys[pg.K_s]:
-            num_key_pressed += 1
-            dx += -speed_cos
-            dy += -speed_sin
+            num_keys_pressed += 1
+            delta_x += -speed_cos
+            delta_y += -speed_sin
         if keys[pg.K_a]:
-            num_key_pressed += 1
-            dx += speed_sin
-            dy += -speed_cos
+            num_keys_pressed += 1
+            delta_x += speed_sin
+            delta_y += -speed_cos
         if keys[pg.K_d]:
-            num_key_pressed += 1
-            dx += -speed_sin
-            dy += speed_cos
+            num_keys_pressed += 1
+            delta_x += -speed_sin
+            delta_y += speed_cos
 
-        # diag move correction
-        if num_key_pressed:
-            dx *= self.diag_move_corr
-            dy *= self.diag_move_corr
+        if num_keys_pressed:
+            delta_x *= self.diag_move_corr
+            delta_y *= self.diag_move_corr
 
-        self.check_wall_collision(dx, dy)
+        self.check_wall_collision(delta_x, delta_y)
 
-        # if keys[pg.K_LEFT]:
-        #     self.angle -= PLAYER_ROT_SPEED * self.game.delta_time
-        # if keys[pg.K_RIGHT]:
-        #     self.angle += PLAYER_ROT_SPEED * self.game.delta_time
         self.angle %= math.tau
 
-    def check_wall(self, x, y):
-        return (x, y) not in self.game.map.world_map
+    def check_wall(self, tile_x, tile_y):
+        return (tile_x, tile_y) not in self.game.map.world_map
 
-    def check_wall_collision(self, dx, dy):
+    def check_wall_collision(self, delta_x, delta_y):
         scale = PLAYER_SIZE_SCALE / self.game.delta_time
-        if self.check_wall(int(self.x + dx * scale), int(self.y)):
-            self.x += dx
-        if self.check_wall(int(self.x), int(self.y + dy * scale)):
-            self.y += dy
+        if self.check_wall(int(self.pos_x + delta_x * scale), int(self.pos_y)):
+            self.pos_x += delta_x
+        if self.check_wall(int(self.pos_x), int(self.pos_y + delta_y * scale)):
+            self.pos_y += delta_y
 
     def draw(self):
-        pg.draw.line(self.game.screen, 'yellow', (self.x * 100, self.y * 100),
-                    (self.x * 100 + WIDTH * math.cos(self.angle),
-                     self.y * 100 + WIDTH * math. sin(self.angle)), 2)
-        pg.draw.circle(self.game.screen, 'green', (self.x * 100, self.y * 100), 15)
+        pg.draw.line(
+            self.game.screen,
+            'yellow',
+            (self.pos_x * 100, self.pos_y * 100),
+            (
+                self.pos_x * 100 + WIDTH * math.cos(self.angle),
+                self.pos_y * 100 + WIDTH * math.sin(self.angle)
+            ),
+            2
+        )
+        pg.draw.circle(
+            self.game.screen,
+            'green',
+            (self.pos_x * 100, self.pos_y * 100),
+            15
+        )
 
     def mouse_control(self):
-        mx, my = pg.mouse.get_pos()
-        if mx < MOUSE_BORDER_LEFT or mx > MOUSE_BORDER_RIGHT:
+        mouse_x, mouse_y = pg.mouse.get_pos()
+        if mouse_x < MOUSE_BORDER_LEFT or mouse_x > MOUSE_BORDER_RIGHT:
             pg.mouse.set_pos([HALF_WIDTH, HALF_HEIGHT])
         self.rel = pg.mouse.get_rel()[0]
         self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, self.rel))
@@ -116,9 +122,17 @@ class Player:
         self.recover_health()
 
     @property
+    def x(self):
+        return self.pos_x
+
+    @property
+    def y(self):
+        return self.pos_y
+
+    @property
     def pos(self):
-        return self.x, self.y
+        return self.pos_x, self.pos_y
 
     @property
     def map_pos(self):
-        return int(self.x), int(self.y)
+        return int(self.pos_x), int(self.pos_y)

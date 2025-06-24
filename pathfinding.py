@@ -6,7 +6,10 @@ class PathFinding:
     def __init__(self, game):
         self.game = game
         self.map = game.map.mini_map
-        self.ways = [-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [1, -1], [1, 1], [-1, 1]
+        self.ways = [
+            (-1, 0), (0, -1), (1, 0), (0, 1),
+            (-1, -1), (1, -1), (1, 1), (-1, 1)
+        ]
         self.graph = {}
         self.get_graph()
 
@@ -26,22 +29,28 @@ class PathFinding:
         visited = {start: None}
 
         while queue:
-            cur_node = queue.popleft()
-            if cur_node == goal:
+            current_node = queue.popleft()
+            if current_node == goal:
                 break
-            next_nodes = graph[cur_node]
+            next_nodes = graph[current_node]
 
             for next_node in next_nodes:
                 if next_node not in visited and next_node not in self.game.object_handler.npc_positions:
                     queue.append(next_node)
-                    visited[next_node] = cur_node
+                    visited[next_node] = current_node
         return visited
 
-    def get_next_nodes(self, x, y):
-        return [(x + dx, y + dy) for dx, dy in self.ways if (x + dx, y + dy) not in self.game.map.world_map]
+    def get_next_nodes(self, tile_x, tile_y):
+        return [
+            (tile_x + delta_x, tile_y + delta_y)
+            for delta_x, delta_y in self.ways
+            if (tile_x + delta_x, tile_y + delta_y) not in self.game.map.world_map
+        ]
 
     def get_graph(self):
-        for y, row in enumerate(self.map):
-            for x, col in enumerate(row):
+        for tile_y, row in enumerate(self.map):
+            for tile_x, col in enumerate(row):
                 if not col:
-                    self.graph[(x, y)] = self.graph.get((x, y), []) + self.get_next_nodes(x, y)
+                    self.graph[(tile_x, tile_y)] = self.graph.get(
+                        (tile_x, tile_y), []
+                    ) + self.get_next_nodes(tile_x, tile_y)
