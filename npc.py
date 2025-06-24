@@ -26,9 +26,18 @@ class NPC(AnimatedSprite):
         self.get_sprite()
         self.run_logic()
 
+    def animate_pain(self):
+        self.animate(self.pain_images)
+        if self.animation_trigger:
+            self.pain = False
+
     def run_logic(self):
         if self.alive:
-            self.animate(self.idle_images)
+            self.check_hit_in_npc()
+            if self.pain:
+                self.animate_pain()
+            else:
+                self.animate(self.idle_images)
 
     def check_hit_in_npc(self):
         if self.game.player.shot:
